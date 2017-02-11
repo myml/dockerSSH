@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
 	"os/user"
 	"strings"
 
@@ -21,17 +22,23 @@ var dockerClient *docker.Client
 func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
-	host := "tcp://192.168.99.100:2376"
+	host := "unix:///var/run/docker.sock"
 	u, err := user.Current()
 	if err != nil {
 		log.Panic(err)
 	}
+
 	config := u.HomeDir + "/.docker"
-	dockerClient, err = docker.NewTLSClient(
-		host,
-		config+"/cert.pem",
-		config+"/key.pem",
-		config+"/ca.pem")
+	_, err = os.Stat(config)
+	if err != nil {
+		dockerClient, err = docker.NewClient(host)
+	} else {
+		dockerClient, err = docker.NewTLSClient(
+			host,
+			config+"/cert.pem",
+			config+"/key.pem",
+			config+"/ca.pem")
+	}
 	if err != nil {
 		log.Panic("docker连接失败：", err)
 	}
