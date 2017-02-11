@@ -4,11 +4,13 @@
 dockerSSH是一个go语言实现的ssh服务端，可以让你用ssh直连到docker容器内部
 
 ## 安装使用
+在docker服务器执行（非容器内部）
 ```
 go get github.com/myml/dockerSSH
 cd $GOPATH/bin
 ./dockerSSH 
 ```
+用户名即为要登陆的容器ID，比如
 使用ssh ff756b3ea527@127.0.0.1 -p 2022登陆到ID为ff756b3ea527的容器内（请确保容器正在运行中）
 
 ## 注意
